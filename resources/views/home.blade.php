@@ -317,9 +317,9 @@
     <script src="{{ asset('plugins/chartjs/Chart.bundle.js')}}"></script>
 
     <!-- Flot Charts Plugin Js -->
-    <script src="{{ asset('plugins/flot-charts/jquery.flot.js')}}"></script>
-    <script src="{{ asset('plugins/flot-charts/jquery.flot.resize.js')}}"></script>
-    <script src="{{ asset('plugins/flot-charts/jquery.flot.pie.js')}}"></script>
-    <script src="{{ asset('plugins/flot-charts/jquery.flot.categories.js')}}"></script>
-    <script src="{{ asset('plugins/flot-charts/jquery.flot.time.js')}}"></script>
+    <script src="{{ asset('public/plugins/flot-charts/jquery.flot.js')}}"></script>
+    <script src="{{ asset('public/plugins/flot-charts/jquery.flot.resize.js')}}"></script>
+    <script src="{{ asset('public/plugins/flot-charts/jquery.flot.pie.js')}}"></script>
+    <script src="{{ asset('public/plugins/flot-charts/jquery.flot.categories.js')}}"></script>
+    <script src="{{ asset('public/plugins/flot-charts/jquery.flot.time.js')}}"></script>
 @endsection
