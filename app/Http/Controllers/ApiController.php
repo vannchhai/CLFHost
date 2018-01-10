@@ -99,22 +99,22 @@ class ApiController extends FrontController
             $insertLocation->save();
         }
 
-        if (!file_exists(public_path().'/assets/upload/user_'.$insertItem->user_id)) {
-            mkdir(public_path().'/assets/upload/user_'.$insertItem->user_id, 0777, true);
+        if (!file_exists(public_path().'/public/assets/upload/user_'.$insertItem->user_id)) {
+            mkdir(public_path().'/public/assets/upload/user_'.$insertItem->user_id, 0777, true);
         }
 
-        $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
+        $path = public_path().'/public/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
         $data = $request->photo;
         $imgItm = file_put_contents($path, base64_decode($data));
         
         if ($imgItm != '') {
             $arrNew = array( 
-            'item_name' => $insertItem->item_name, 
-            'item_type_id' => (int)$insertItem->item_type_id, 
-            'item_description' => $insertItem->item_description,
-            'item_category_id' => (int)$insertItem->item_category_id, 
-            'contact_number' => $insertItem->contact_number, 
-            'user_id' => (int)$insertItem->user_id, 
+            'item_name' => $request->name, 
+            'item_type_id' => $request->type, 
+            'item_description' => $request->item_description,
+            'item_category_id' => $request->category, 
+            'contact_number' => $request->contact_number, 
+            'user_id' => $request->user_id, 
             'icon' => 1
             );
             Item::where('id', $insertItem->id)->update($arrNew);
@@ -128,11 +128,11 @@ class ApiController extends FrontController
        
        
         if (isset($img)) {
-            if (!file_exists(public_path().'/assets/upload/user_'.$request->id)) {
-                mkdir(public_path().'/assets/upload/user_'.$request->id, 0777, true);
+            if (!file_exists(public_path().'/public/assets/upload/user_'.$request->id)) {
+                mkdir(public_path().'/public/assets/upload/user_'.$request->id, 0777, true);
             }
 
-            $path = public_path().'/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
+            $path = public_path().'/public/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
             file_put_contents($path, base64_decode($img));
             $arrNew = array(
             'id' => $request->id, 
