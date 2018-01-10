@@ -313,8 +313,8 @@
 @endsection
 @section('javascript')
     <!-- ChartJs -->
-    <script src="{{ asset('js/pages/index.js')}}"></script>
-    <script src="{{ asset('plugins/chartjs/Chart.bundle.js')}}"></script>
+    <script src="{{ asset('public/js/pages/index.js')}}"></script>
+    <script src="{{ asset('public/plugins/chartjs/Chart.bundle.js')}}"></script>
 
     <!-- Flot Charts Plugin Js -->
     <script src="{{ asset('public/plugins/flot-charts/jquery.flot.js')}}"></script>
