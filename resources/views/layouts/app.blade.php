@@ -31,7 +31,7 @@
     <!-- Custom Css -->
     <link href="{{ asset('public/css/style.css')}}" rel="stylesheet">
 
-    <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+    <!-- AdminBSB Themes . You can choose a theme from css/themes instead of get all themes -->
     <link href="{{ asset('public/css/themes/all-themes.css')}}" rel="stylesheet" />
 </head>
 
@@ -558,7 +558,7 @@
     <script src="{{ asset('public/plugins/node-waves/waves.js')}}"></script>
 
     <!-- Jquery CountTo Plugin Js -->
-    <script src="{{ asset('plugins/jquery-countto/jquery.countTo.js')}}"></script>
+    <script src="{{ asset('public/plugins/jquery-countto/jquery.countTo.js')}}"></script>
 
     <!-- Morris Plugin Js -->
     <script src="{{ asset('public/plugins/raphael/raphael.min.js')}}"></script>
