@@ -99,11 +99,11 @@ class ApiController extends FrontController
             $insertLocation->save();
         }
 
-        if (!file_exists(public_path().'/public/assets/upload/user_'.$insertItem->user_id)) {
-            mkdir(public_path().'/public/assets/upload/user_'.$insertItem->user_id, 0777, true);
+        if (!file_exists(public_path().'/assets/upload/user_'.$insertItem->user_id)) {
+            mkdir(public_path().'/assets/upload/user_'.$insertItem->user_id, 0777, true);
         }
 
-        $path = public_path().'/public/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
+        $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
         $data = $request->photo;
         $imgItm = file_put_contents($path, base64_decode($data));
         
@@ -111,7 +111,7 @@ class ApiController extends FrontController
             $arrNew = array( 
             'item_name' => $request->name, 
             'item_type_id' => $request->type, 
-            'item_description' => $request->item_description,
+            'item_description' => $request->description,
             'item_category_id' => $request->category, 
             'contact_number' => $request->contact_number, 
             'user_id' => $request->user_id, 
@@ -128,11 +128,11 @@ class ApiController extends FrontController
        
        
         if (isset($img)) {
-            if (!file_exists(public_path().'/public/assets/upload/user_'.$request->id)) {
-                mkdir(public_path().'/public/assets/upload/user_'.$request->id, 0777, true);
+            if (!file_exists(public_path().'/assets/upload/user_'.$request->id)) {
+                mkdir(public_path().'/assets/upload/user_'.$request->id, 0777, true);
             }
 
-            $path = public_path().'/public/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
+            $path = public_path().'/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
             file_put_contents($path, base64_decode($img));
             $arrNew = array(
             'id' => $request->id, 
@@ -163,11 +163,12 @@ class ApiController extends FrontController
         }
     }
 
-    public function getAllItem($id){
+    public function getAllItem($id, $start, $end){
         $item =  User::select('*')
             ->join('item', 'users.id' , '=' , 'item.user_id')
             ->where('item.active' , 1)
-            ->orderBy('item.created_at','DESC')->get();
+            ->orderBy('item.created_at','DESC')->offset($start)->limit($end)->get();
+           
             foreach ($item as $key) {
                 $count =  Liker::where('item_id', $key->id)->get();
                 $color =  Liker::where(array('item_id' => $key->id, 'user_id' => $id))->first();
@@ -213,7 +214,7 @@ class ApiController extends FrontController
         return response()->json($request);
     }
 
-    public function getFilterItemByCategory($id){
+    public function getFilterItemByCategory($id, $start, $end){
          $con = array(
             'item.active' => 1,
             'item.item_category_id' => $id,
@@ -221,7 +222,7 @@ class ApiController extends FrontController
          $item =  User::select('*')
             ->join('item', 'users.id' , '=' , 'item.user_id')
             ->where($con)
-            ->orderBy('item.created_at','DESC')->get();
+            ->orderBy('item.created_at','DESC')->offset($start)->limit($end)->get();
             foreach ($item as $key) {
                 $count =  Liker::where('item_id', $key->id)->get();
                 $color =  Liker::where(array('item_id' => $key->id, 'user_id' => $key->user_id))->first();
@@ -272,7 +273,8 @@ class ApiController extends FrontController
     }
 
     public function getLocation(){
-        $list = Location::select('latitude as lat', 'longitude as lng')->get();
+        $list = Location::select('latitude as lat', 'longitude as lng')
+        ->join('item', 'location.item_id', '=', 'item.id')->get();
         return response()->json($list);
     }
 
@@ -384,7 +386,7 @@ class ApiController extends FrontController
         return response()->json($insert);
     }
 
-    public function getFilterByType($type){
+    public function getFilterByType($type, $start, $end){
         $con = array(
             'item.active' => 1,
             'item.item_type_id' => $type
@@ -392,7 +394,7 @@ class ApiController extends FrontController
          $item =  User::select('*')
             ->join('item', 'users.id' , '=' , 'item.user_id')
             ->where($con)
-            ->orderBy('item.created_at','DESC')->get();
+            ->orderBy('item.created_at','DESC')->offset($start)->limit($end)->get();
             foreach ($item as $key) {
                 $count =  Liker::where('item_id', $key->id)->get();
                 $color =  Liker::where(array('item_id' => $key->id, 'user_id' => $key->user_id))->first();

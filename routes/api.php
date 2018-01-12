@@ -63,10 +63,10 @@ Route::group([
 		Route::post('/sendFeedback', 'ApiController@sendFeedback');
 
 		// Show All Item Post
-		Route::get('/getAllItem/{id}', 'ApiController@getAllItem');
+		Route::get('/getAllItem/{id}/{start}/{end}', 'ApiController@getAllItem');
 
 		// Filter Item by category type
-		Route::get('/getFilterItemByCategory/{id}', 'ApiController@getFilterItemByCategory');
+		Route::get('/getFilterItemByCategory/{id}/{start}/{end}', 'ApiController@getFilterItemByCategory');
 
 		// Show All Category list
 		Route::get('/getAllCategory', 'ApiController@getAllCategory');
@@ -86,6 +86,6 @@ Route::group([
 		// List Notfication
 		Route::get('/listNotfication/{auth}/', 'ApiController@getNotfication');
 		
-		Route::get('/getFilterByType/{type}/', 'ApiController@getFilterByType');
+		Route::get('/getFilterByType/{type}/{start}/{end}', 'ApiController@getFilterByType');
     });
 
