@@ -20,5 +20,15 @@ class Comment extends Authenticatable
     protected $fillable = [
         'id', 'item_id', 'user_id', 'comment'
     ];
+
+    
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
     
 }

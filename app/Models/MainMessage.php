@@ -21,4 +21,14 @@ class MainMessage extends Authenticatable
         'id', 'sender_id', 'reciever_id', 'created_at'
     ];
     
+
+    
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 }

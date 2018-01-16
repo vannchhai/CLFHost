@@ -16,7 +16,6 @@ Route::get('/', 'TemplateController@index');
 Auth::routes();
 Route::get('/home', 'HomeController@index');
 
-
 Route::get('/user', 'User\UsersController@index');
 Route::get('/user_create', 'User\UsersController@create');
 Route::get('/user_edit/{id}', 'User\UsersController@edit');

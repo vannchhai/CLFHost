@@ -20,5 +20,16 @@ class Message extends Authenticatable
     protected $fillable = [
         'id', 'sender_id', 'reciever_id', 'message','main_id', 'status', 'created_at'
     ];
+
+
+    
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
     
 }

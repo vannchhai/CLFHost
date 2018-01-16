@@ -20,10 +20,13 @@ class Feedback extends Authenticatable
     protected $fillable = [
         'id', 'title', 'description', 'user_id', 'created_at', 'updated_at'
     ];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
 }

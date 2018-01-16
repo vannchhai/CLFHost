@@ -15,6 +15,7 @@ use App\Models\ItemCategory;
 use App\Http\Controllers\FrontController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Hash;
+use LRedis;
 
 class ApiController extends FrontController
 {

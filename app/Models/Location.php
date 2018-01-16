@@ -20,5 +20,15 @@ class Location extends Authenticatable
     protected $fillable = [
         'id', 'country_code', 'location_name', 'longitude', 'latitude', 'feature_code', 'poputation', 'time_zone', 'item_id', 'active', 'created_at', 'updated_at'
     ];
+
+    
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
     
 }
