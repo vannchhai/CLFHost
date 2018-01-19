@@ -44,7 +44,7 @@ class PagesController extends FrontController
     }
 
     public function page_update(Request $request){
-        $arr = array('name' => $request->input('name'), 'description' => $request->input('description'), $request->input('active') == "on" ? 1 : 0 );
+        $arr = array('name' => $request->input('name'), 'description' => $request->input('description'),'active' => $request->input('active') == "on" ? 1 : 0 );
         Page::where('id', $request->input('id'))->update($arr);
         session()->flash('msg','Updated successfully');
         return redirect()->to('page');
