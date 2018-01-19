@@ -164,15 +164,39 @@ class ApiController extends FrontController
         }
     }
 
-    public function getAllItem($id, $start, $end){
-        $item =  User::select('*')
-            ->join('item', 'users.id' , '=' , 'item.user_id')
-            ->where('item.active' , 1)
-            ->orderBy('item.created_at','DESC')->offset($start)->limit($end)->get();
-           
+    public function getAllItem(Request $request){
+        $item =  User::select('*');
+            
+            if ($request->type == 0 && $request->category == 0) {
+                # show all data
+                $item = $item->join('item', 'users.id' , '=' , 'item.user_id')
+                            ->where('item.active' , 1)
+                            ->orderBy('item.created_at','DESC')->offset($request->start)->limit($request->end)->get();
+            }else if($request->type == 2 && $request->category == 0){
+                #show all cateogry and item found
+                $item = $item->join('item', 'users.id' , '=' , 'item.user_id')
+                            ->where('item.active' , 1)
+                            ->where('item.item_type_id', '=', 2)
+                            ->orderBy('item.created_at','DESC')->offset($request->start)->limit($request->end)->get();
+            }else if($request->type == 1 && $request->cateogry == 0){
+                #show all category and item lost
+                 $item = $item->join('item', 'users.id' , '=' , 'item.user_id')
+                            ->where('item.active' , 1)
+                            ->where('item.item_type_id', '=', 1)
+                            ->orderBy('item.created_at','DESC')->offset($request->start)->limit($request->end)->get();
+            }else if($request->type == 0 && $request->category != 0){
+                #show all type and filter by category idsss
+                $item = $item->join('item', 'users.id' , '=' , 'item.user_id')
+                            ->where('item.active' , 1)
+                            ->where('item.item_category_id', '=', $request->cateogry)
+                            ->orderBy('item.created_at','DESC')->offset($request->start)->limit($request->end)->get();
+            }
+
+
+
             foreach ($item as $key) {
                 $count =  Liker::where('item_id', $key->id)->get();
-                $color =  Liker::where(array('item_id' => $key->id, 'user_id' => $id))->first();
+                $color =  Liker::where(array('item_id' => $key->id, 'user_id' => $request->id))->first();
                 $key->liker = sizeof($count);
                 $key->colorStatus = $color != null ? 'like' : 'unlike';
 
@@ -273,9 +297,20 @@ class ApiController extends FrontController
         return response()->json($insert);
     }
 
-    public function getLocation(){
-        $list = Location::select('latitude as lat', 'longitude as lng')
-        ->join('item', 'location.item_id', '=', 'item.id')->get();
+    public function getLocation($type , $category){
+        $list = Location::select('latitude as lat', 'longitude as lng', 'item.item_type_id');
+
+        if ($type == 1 && $category == 0) {
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->where('item.item_type_id', 1)->get();
+        }else if($type == 2 && $category == 0){
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->where('item.item_type_id', 2)->get();
+
+        }else if($category != 0){
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->where('item.item_category_id', $category)->get();
+        }else{
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->get();
+        }
+        
         return response()->json($list);
     }
 
@@ -332,6 +367,42 @@ class ApiController extends FrontController
     public function getMessageDetail($mainId){
 
         $data = Message::where('main_id', $mainId)->get();
+        $checking = MainMessage::where('id', $mainId)->where('status', 'pending')->first();
+
+        $checkNotify = Notification::where('main_id', $mainId)->where('status', 'pending')->first();
+
+
+        if ($checking != null) {
+            $check = MainMessage::where('id', '=', $mainId)->first();
+
+
+            $dataUpdate = array(
+                'id' => $check->id,
+                'sender_id' => $check->sender_id,
+                'reciever_id' => $check->reciever_id,
+                'status' => "checked"
+            );
+
+          
+            MainMessage::where('id',$mainId)->update($dataUpdate);
+        }
+
+
+        if ($checkNotify != null) {
+          $request = Notification::where('main_id', $mainId)->first();
+          $dataNotify = array(
+                'id' => $request->id,
+                'sender_id' => $request->sender_id, 
+                'reciever_id' => $request->reciever_id, 
+                'key' => $request->key, 
+                'value' => $request->value, 
+                'main_id' => $request->main_id,
+                'status' => "checked"
+            );
+            Notification::where('main_id',$mainId)->update($dataNotify);
+
+        }
+
         return response()->json($data);
     }
 
@@ -359,7 +430,7 @@ class ApiController extends FrontController
     }
 
     public function getNotfication($auth){
-        $lst = Notification::where('reciever_id', $auth)->orWhere('sender_id', $auth)->orderBy('created_at','DESC')->get();
+        $lst = Notification::where('reciever_id', $auth)->orWhere('sender_id', $auth)->where('status','pending')->orderBy('created_at','DESC')->get();
         foreach ($lst as $key) {
             $eId = $key->reciever_id;
             if ($key->reciever_id == $auth) {

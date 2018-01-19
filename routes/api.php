@@ -63,7 +63,7 @@ Route::group([
 		Route::post('/sendFeedback', 'ApiController@sendFeedback');
 
 		// Show All Item Post
-		Route::get('/getAllItem/{id}/{start}/{end}', 'ApiController@getAllItem');
+		Route::post('/getAllItem', 'ApiController@getAllItem');
 
 		// Filter Item by category type
 		Route::get('/getFilterItemByCategory/{id}/{start}/{end}', 'ApiController@getFilterItemByCategory');
@@ -75,7 +75,7 @@ Route::group([
 		Route::get('/itemProfile/{id}', 'ApiController@getIemProfile');
 
 		// List All Location point
-		Route::get('/getLocation', 'ApiController@getLocation');
+		Route::get('/getLocation/{type}/{category}', 'ApiController@getLocation');
 
 		// List All Message by Auth Login
 		Route::get('/listMessage/{id}', 'ApiController@listMessage');

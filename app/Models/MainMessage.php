@@ -18,7 +18,7 @@ class MainMessage extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'sender_id', 'reciever_id', 'created_at'
+        'id', 'sender_id', 'reciever_id', 'created_at', 'status'
     ];
     
 
