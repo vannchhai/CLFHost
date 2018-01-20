@@ -208,6 +208,26 @@ class ApiController extends FrontController
         return response()->json($item);
     }
 
+     public function allItem($id){
+        $item =  User::select('*')->join('item', 'users.id' , '=' , 'item.user_id')
+                            ->where('item.active' , 1)
+                            ->orderBy('item.created_at','DESC')->offset(1)->limit(5)->get();
+            
+
+            foreach ($item as $key) {
+                $count =  Liker::where('item_id', $key->id)->get();
+                $color =  Liker::where(array('item_id' => $key->id, 'user_id' => $id))->first();
+                $key->liker = sizeof($count);
+                $key->colorStatus = $color != null ? 'like' : 'unlike';
+
+                $key->listComments = Comment:: where('item_id', $key->id)->get();
+
+                $key->listMarkers = Location::select('latitude as lat', 'longitude as lng')->where('item_id', $key->id)->get();
+            }
+
+        return response()->json($item);
+    }
+
     public function getAllCategory(){
         $data = ItemCategory::where('active',1)->get();
         return response()->json($data);

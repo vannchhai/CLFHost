@@ -64,7 +64,7 @@ Route::group([
 
 		// Show All Item Post
 		Route::post('/getAllItem', 'ApiController@getAllItem');
-
+		
 		// Filter Item by category type
 		Route::get('/getFilterItemByCategory/{id}/{start}/{end}', 'ApiController@getFilterItemByCategory');
 
