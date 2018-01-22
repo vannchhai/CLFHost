@@ -85,8 +85,8 @@
     </div>
 @endsection
 @section('javascript')
-    <script src="{{ asset('plugins/jquery-datatable/jquery.dataTables.js')}}"></script>
-    <script src="{{ asset('plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js')}}"></script>
-    <script src="{{ asset('js/pages/tables/jquery-datatable.js')}}"></script>
+    <script src="{{ asset('public/plugins/jquery-datatable/jquery.dataTables.js')}}"></script>
+    <script src="{{ asset('public/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js')}}"></script>
+    <script src="{{ asset('public/js/pages/tables/jquery-datatable.js')}}"></script>
 @endsection
 
