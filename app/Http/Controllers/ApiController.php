@@ -428,7 +428,10 @@ class ApiController extends FrontController
 
     public function insertNotfication(Request $request){
 
-            $check = Notification::where('main_id', $request->main_id)->first();
+            $check = Notification::where('sender_id', $request->sender_id)
+                    ->where('reciever_id', $request->reciever_id)
+                    ->orWhere('sender_id', $request->reciever_id)
+                    ->where('reciever_id', $request->sender_id)->first();
 
             if ($check == null) {
                 $data = array(
