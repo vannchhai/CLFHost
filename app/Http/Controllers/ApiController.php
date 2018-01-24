@@ -29,6 +29,10 @@ class ApiController extends FrontController
     {
         parent::__construct();
         $this->middleware('guest')->except('logout');
+        $app_id = $_GET['APP_ID'];
+        if ($app_id != 'za0HOHo9qA1edryH6uEFZTj9thlR/jRuyy5hjIyjVnA=') {
+            die();
+        }
     }
 
     /**
@@ -318,17 +322,17 @@ class ApiController extends FrontController
     }
 
     public function getLocation($type , $category){
-        $list = Location::select('latitude as lat', 'longitude as lng', 'item.item_type_id');
+        $list = Location::select('location.latitude as lat', 'location.longitude as lng', 'item.item_type_id', 'item.item_name', 'users.email', 'users.phone');
 
         if ($type == 1 && $category == 0) {
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->where('item.item_type_id', 1)->get();
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 1)->get();
         }else if($type == 2 && $category == 0){
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->where('item.item_type_id', 2)->get();
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 2)->get();
 
         }else if($category != 0){
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->where('item.item_category_id', $category)->get();
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_category_id', $category)->get();
         }else{
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->get();
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->get();
         }
         
         return response()->json($list);
