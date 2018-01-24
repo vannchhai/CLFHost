@@ -276,8 +276,8 @@
                     </div>
                     <div class="col-md-4 col-sm-4 scrollpoint sp-effect2">
                         @foreach($featureDescriptionRightList as $key)
-                        <div class="media text-right feature">
-                            <a class="pull-right" href="#">
+                        <div class="media text-left feature">
+                            <a class="pull-left" href="#">
                                 <i class="{{ $key->icon }}"></i>
                             </a>
                             <div class="media-body">
