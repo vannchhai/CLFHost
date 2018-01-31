@@ -47,9 +47,19 @@ class ApiController extends FrontController
         // $data = User::where('email' , $request->email)->first();
 
         // return response()->json($data);
-        $auth  = array('email' => $request->email, 'password' => md5($request->password) );
-        $data = User::where($auth)->first();
-        return response()->json($data);
+        $checkPass =  User::where('email', $request->email)->first();
+
+        if (isset($checkPass)) {
+             $isVerify = password_verify($request->password , $checkPass->password);
+
+            if($isVerify){
+                $data =  User::where('email', $request->email)->first();
+                return response()->json($data);
+
+            }
+        }
+
+        return response()->json([]);
     }
 
     public function signup(Request $request){
@@ -62,7 +72,7 @@ class ApiController extends FrontController
                 'email' => $request->email, 
                 'phone' => $request->phone, 
                 'sex' => 0, 
-                'password' => md5($request->password), 
+                'password' => password_hash($request->password, PASSWORD_BCRYPT), 
                 'user_type_id' => 1,
                 'icon' => 0,
                 'closed' => 0,
@@ -86,7 +96,7 @@ class ApiController extends FrontController
             'item_description' => $request->description,
             'item_category_id' => $request->category, 
             'contact_number' => $request->contact_number, 
-            'user_id' => $request->user_id, 
+            'user_id' => $request->user_id,
             'icon' => 0
             );
         $insertItem = new Item($arr);
@@ -130,42 +140,54 @@ class ApiController extends FrontController
     public function editProfile(Request $request){
 
         $img = $request->photo;
-       
-       
-        if (isset($img)) {
-            if (!file_exists(public_path().'/assets/upload/user_'.$request->id)) {
-                mkdir(public_path().'/assets/upload/user_'.$request->id, 0777, true);
-            }
 
-            $path = public_path().'/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
-            file_put_contents($path, base64_decode($img));
-            $arrNew = array(
-            'id' => $request->id, 
-            'name' => $request->username, 
-            'email' => $request->email, 
-            'phone' => $request->phone, 
-            'sex' => $request->sex, 
-            'password' => md5($request->newpassword), 
-            'active' => 1, 
-            'profile' => 1
-            );
-            
-            $update = User::where('id', $request->id)->update($arrNew);
-            return response()->json($update);
-        }else{
-             $arr = array(
-            'id' => $request->id, 
-            'name' => $request->username, 
-            'email' => $request->email, 
-            'phone' => $request->phone, 
-            'sex' => $request->sex, 
-            'password' => md5($request->newpassword), 
-            'active' => 1, 
-            'profile' => User::where('id', $request->id)->first()->profile == 1 ? 1 : 0
-            );
-            $update = User::where('id', $request->id)->update($arr);
-            return response()->json($update);
+        $checkPass =  User::where('email', $request->email)->first();
+
+        if (isset($checkPass)) {
+             $isVerify = password_verify($request->current , $checkPass->password);
+
+            if($isVerify){
+                 if (isset($img)) {
+                    if (!file_exists(public_path().'/assets/upload/user_'.$request->id)) {
+                        mkdir(public_path().'/assets/upload/user_'.$request->id, 0777, true);
+                    }
+
+                    $path = public_path().'/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
+                    file_put_contents($path, base64_decode($img));
+                    $arrNew = array(
+                    'id' => $request->id, 
+                    'name' => $request->username, 
+                    'email' => $request->email, 
+                    'phone' => $request->phone, 
+                    'sex' => $request->sex, 
+                    'password' => password_hash($request->newpassword, PASSWORD_BCRYPT), 
+                    'active' => 1, 
+                    'profile' => 1
+                    );
+                    
+                    $update = User::where('id', $request->id)->update($arrNew);
+                    return response()->json($update);
+                }else{
+                     $arr = array(
+                    'id' => $request->id, 
+                    'name' => $request->username, 
+                    'email' => $request->email, 
+                    'phone' => $request->phone, 
+                    'sex' => $request->sex, 
+                    'password' => password_hash($request->newpassword, PASSWORD_BCRYPT), 
+                    'active' => 1, 
+                    'profile' => User::where('id', $request->id)->first()->profile == 1 ? 1 : 0
+                    );
+                    $update = User::where('id', $request->id)->update($arr);
+                    return response()->json($update);
+                }
+            }else{
+                return response()->json(false);
+            }
         }
+       
+       return response()->json([]);
+      
     }
 
     public function getAllItem(Request $request){
@@ -324,15 +346,27 @@ class ApiController extends FrontController
     public function getLocation($type , $category){
         $list = Location::select('location.latitude as lat', 'location.longitude as lng', 'item.item_type_id', 'item.item_name', 'users.email', 'users.phone');
 
+        $total = 0;
+        $countLocation = Location::select('*');
+ 
+
         if ($type == 1 && $category == 0) {
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 1)->get();
+            $total = $countLocation->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 1)->get()->count();
+            $total = $total > 100 ? 100 : $total;
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 1)->get()->random($total);
         }else if($type == 2 && $category == 0){
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 2)->get();
+            $total = $countLocation->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 2)->get()->count();
+            $total = $total > 100 ? 100 : $total;
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_type_id', 2)->get()->random($total);
 
         }else if($category != 0){
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_category_id', $category)->get();
+            $total = $countLocation->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_category_id', $category)->get()->count();
+            $total = $total > 100 ? 100 : $total;
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->where('item.item_category_id', $category)->get()->random($total);
         }else{
-            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->get();
+            $total = $countLocation->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->get()->count();
+            $total = $total > 100 ? 100 : $total;
+            $list = $list->join('item', 'location.item_id', '=', 'item.id')->join('users', 'users.id', '=', 'item.user_id')->get()->random($total);
         }
         
         return response()->json($list);
