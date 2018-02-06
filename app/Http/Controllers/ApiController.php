@@ -120,8 +120,50 @@ class ApiController extends FrontController
 
         $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
         $data = $request->photo;
-        $imgItm = file_put_contents($path, base64_decode($data));
-        
+        $imgItm = file_put_contents($path,base64_decode($data));
+        $destination = public_path().'/assets/upload/user_'.$insertItem->user_id.'/_thumnail/';
+
+        $width = 400;
+        $height = 400;
+
+        if (!file_exists($destination)) {
+            mkdir($destination, 0777, true);
+        }
+
+        // Get new dimensions
+        list($width_orig, $height_orig) = getimagesize($path);
+
+        $ratio_orig = $width_orig/$height_orig;
+
+        if ($width/$height > $ratio_orig) {
+           $width = $height*$ratio_orig;
+        } else {
+           $height = $width/$ratio_orig;
+        }
+
+        // Resample
+        $image_p = imagecreatetruecolor($width, $height);
+        // $image = imagecreatefromjpeg($path);
+
+
+        $info = getimagesize($path);
+
+        if ($info['mime'] == 'image/jpeg') 
+            $image = imagecreatefromjpeg($path);
+
+        elseif ($info['mime'] == 'image/gif') 
+            $image = imagecreatefromgif($path);
+
+        elseif ($info['mime'] == 'image/png') 
+            $image = imagecreatefrompng($path);
+
+
+        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+        $filename = $destination.$insertItem->id.'.jpg';
+        // // Output
+        imagejpeg($image_p, $filename, 100);
+
+
         if ($imgItm != '') {
             $arrNew = array( 
             'item_name' => $request->name, 
@@ -154,6 +196,51 @@ class ApiController extends FrontController
 
                     $path = public_path().'/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
                     file_put_contents($path, base64_decode($img));
+
+
+                    $destination = public_path().'/assets/upload/user_'.$request->id.'/_thumnail/';
+
+                    $width = 400;
+                    $height = 400;
+
+                    if (!file_exists($destination)) {
+                        mkdir($destination, 0777, true);
+                    }
+
+                    // Get new dimensions
+                    list($width_orig, $height_orig) = getimagesize($path);
+
+                    $ratio_orig = $width_orig/$height_orig;
+
+                    if ($width/$height > $ratio_orig) {
+                       $width = $height*$ratio_orig;
+                    } else {
+                       $height = $width/$ratio_orig;
+                    }
+
+                    // Resample
+                    $image_p = imagecreatetruecolor($width, $height);
+                    // $image = imagecreatefromjpeg($path);
+
+
+                    $info = getimagesize($path);
+
+                    if ($info['mime'] == 'image/jpeg') 
+                        $image = imagecreatefromjpeg($path);
+
+                    elseif ($info['mime'] == 'image/gif') 
+                        $image = imagecreatefromgif($path);
+
+                    elseif ($info['mime'] == 'image/png') 
+                        $image = imagecreatefrompng($path);
+
+
+                    imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+                    $filename = $destination.'profile-'.$request->id.'.jpg';
+                    // // Output
+                    imagejpeg($image_p, $filename, 100);
+
+
                     $arrNew = array(
                     'id' => $request->id, 
                     'name' => $request->username, 
@@ -540,5 +627,37 @@ class ApiController extends FrontController
             }
 
         return response()->json($item);
+    }
+
+    function compressItem($filename, $destination, $quality) {
+
+        // Set a maximum height and width
+        $width = $quality;
+        $height = $quality;
+
+        if (!file_exists($destination)) {
+            mkdir($destination, 0777, true);
+        }
+        // Content type
+        header('Content-Type: image/jpeg');
+
+        // Get new dimensions
+        list($width_orig, $height_orig) = getimagesize($filename);
+
+        $ratio_orig = $width_orig/$height_orig;
+
+        if ($width/$height > $ratio_orig) {
+           $width = $height*$ratio_orig;
+        } else {
+           $height = $width/$ratio_orig;
+        }
+
+        // Resample
+        $image_p = imagecreatetruecolor($width, $height);
+        $image = imagecreatefromjpeg($filename);
+        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+
+        // // Output
+        return imagejpeg($image_p, $destination, 100);
     }
 }
