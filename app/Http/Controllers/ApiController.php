@@ -130,38 +130,40 @@ class ApiController extends FrontController
             mkdir($destination, 0777, true);
         }
 
-        // Get new dimensions
-        list($width_orig, $height_orig) = getimagesize($path);
+       if (file_exists($path)) {
+            // Get new dimensions
+            list($width_orig, $height_orig) = getimagesize($path);
 
-        $ratio_orig = $width_orig/$height_orig;
+            $ratio_orig = $width_orig/$height_orig;
 
-        if ($width/$height > $ratio_orig) {
-           $width = $height*$ratio_orig;
-        } else {
-           $height = $width/$ratio_orig;
-        }
+            if ($width/$height > $ratio_orig) {
+               $width = $height*$ratio_orig;
+            } else {
+               $height = $width/$ratio_orig;
+            }
 
-        // Resample
-        $image_p = imagecreatetruecolor($width, $height);
-        // $image = imagecreatefromjpeg($path);
-
-
-        $info = getimagesize($path);
-
-        if ($info['mime'] == 'image/jpeg') 
-            $image = imagecreatefromjpeg($path);
-
-        elseif ($info['mime'] == 'image/gif') 
-            $image = imagecreatefromgif($path);
-
-        elseif ($info['mime'] == 'image/png') 
-            $image = imagecreatefrompng($path);
+            // Resample
+            $image_p = imagecreatetruecolor($width, $height);
+            // $image = imagecreatefromjpeg($path);
 
 
-        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-        $filename = $destination.$insertItem->id.'.jpg';
-        // // Output
-        imagejpeg($image_p, $filename, 100);
+            $info = getimagesize($path);
+
+            if ($info['mime'] == 'image/jpeg') 
+                $image = imagecreatefromjpeg($path);
+
+            elseif ($info['mime'] == 'image/gif') 
+                $image = imagecreatefromgif($path);
+
+            elseif ($info['mime'] == 'image/png') 
+                $image = imagecreatefrompng($path);
+
+
+            imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+            $filename = $destination.$insertItem->id.'.jpg';
+            // // Output
+            imagejpeg($image_p, $filename, 100);
+       }
 
 
         if ($imgItm != '') {
@@ -207,38 +209,40 @@ class ApiController extends FrontController
                         mkdir($destination, 0777, true);
                     }
 
-                    // Get new dimensions
-                    list($width_orig, $height_orig) = getimagesize($path);
+                    if (file_exists($path)) {
+                        // Get new dimensions
+                        list($width_orig, $height_orig) = getimagesize($path);
 
-                    $ratio_orig = $width_orig/$height_orig;
+                        $ratio_orig = $width_orig/$height_orig;
 
-                    if ($width/$height > $ratio_orig) {
-                       $width = $height*$ratio_orig;
-                    } else {
-                       $height = $width/$ratio_orig;
+                        if ($width/$height > $ratio_orig) {
+                           $width = $height*$ratio_orig;
+                        } else {
+                           $height = $width/$ratio_orig;
+                        }
+
+                        // Resample
+                        $image_p = imagecreatetruecolor($width, $height);
+                        // $image = imagecreatefromjpeg($path);
+
+
+                        $info = getimagesize($path);
+
+                        if ($info['mime'] == 'image/jpeg') 
+                            $image = imagecreatefromjpeg($path);
+
+                        elseif ($info['mime'] == 'image/gif') 
+                            $image = imagecreatefromgif($path);
+
+                        elseif ($info['mime'] == 'image/png') 
+                            $image = imagecreatefrompng($path);
+
+
+                        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+                        $filename = $destination.'profile-'.$request->id.'.jpg';
+                        // // Output
+                        imagejpeg($image_p, $filename, 100);
                     }
-
-                    // Resample
-                    $image_p = imagecreatetruecolor($width, $height);
-                    // $image = imagecreatefromjpeg($path);
-
-
-                    $info = getimagesize($path);
-
-                    if ($info['mime'] == 'image/jpeg') 
-                        $image = imagecreatefromjpeg($path);
-
-                    elseif ($info['mime'] == 'image/gif') 
-                        $image = imagecreatefromgif($path);
-
-                    elseif ($info['mime'] == 'image/png') 
-                        $image = imagecreatefrompng($path);
-
-
-                    imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-                    $filename = $destination.'profile-'.$request->id.'.jpg';
-                    // // Output
-                    imagejpeg($image_p, $filename, 100);
 
 
                     $arrNew = array(
