@@ -88,97 +88,101 @@ class ApiController extends FrontController
     }
 
     public function postItem(Request $request){
-        $points = $request->marker;
+        try {
+            $points = $request->marker;
 
-        $arr = array( 
-            'item_name' => $request->name, 
-            'item_type_id' => $request->type, 
-            'item_description' => $request->description,
-            'item_category_id' => $request->category, 
-            'contact_number' => $request->contact_number, 
-            'user_id' => $request->user_id,
-            'icon' => 0
-            );
-        $insertItem = new Item($arr);
-        $insertItem->save();
-        for ($i=0; $i < sizeof($points); $i++) { 
-            $point = array(
-                'country_code' => 'KH', 
-                'location_name' => 'KH', 
-                'longitude' => $points[$i]['lng'], 
-                'latitude' => $points[$i]['lat'], 
-                'item_id' => $insertItem->id,
-                'active' => 'KH', 
+            $arr = array( 
+                'item_name' => $request->name, 
+                'item_type_id' => $request->type, 
+                'item_description' => $request->description,
+                'item_category_id' => $request->category, 
+                'contact_number' => $request->contact_number, 
+                'user_id' => $request->user_id,
+                'icon' => 0
                 );
-            $insertLocation = new Location($point);
-            $insertLocation->save();
-        }
-
-        if (!file_exists(public_path().'/assets/upload/user_'.$insertItem->user_id)) {
-            mkdir(public_path().'/assets/upload/user_'.$insertItem->user_id, 0777, true);
-        }
-
-        $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
-        $data = $request->photo;
-        $imgItm = file_put_contents($path,base64_decode($data));
-        $destination = public_path().'/assets/upload/user_'.$insertItem->user_id.'/_thumnail/';
-
-        $width = 400;
-        $height = 400;
-
-        if (!file_exists($destination)) {
-            mkdir($destination, 0777, true);
-        }
-
-       if (file_exists($path)) {
-            // Get new dimensions
-            list($width_orig, $height_orig) = getimagesize($path);
-
-            $ratio_orig = $width_orig/$height_orig;
-
-            if ($width/$height > $ratio_orig) {
-               $width = $height*$ratio_orig;
-            } else {
-               $height = $width/$ratio_orig;
+            $insertItem = new Item($arr);
+            $insertItem->save();
+            for ($i=0; $i < sizeof($points); $i++) { 
+                $point = array(
+                    'country_code' => 'KH', 
+                    'location_name' => 'KH', 
+                    'longitude' => $points[$i]['lng'], 
+                    'latitude' => $points[$i]['lat'], 
+                    'item_id' => $insertItem->id,
+                    'active' => 'KH', 
+                    );
+                $insertLocation = new Location($point);
+                $insertLocation->save();
             }
 
-            // Resample
-            $image_p = imagecreatetruecolor($width, $height);
-            // $image = imagecreatefromjpeg($path);
+            if (!file_exists(public_path().'/assets/upload/user_'.$insertItem->user_id)) {
+                mkdir(public_path().'/assets/upload/user_'.$insertItem->user_id, 0777, true);
+            }
+
+            $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
+            $data = $request->photo;
+            $imgItm = file_put_contents($path,base64_decode($data));
+            $destination = public_path().'/assets/upload/user_'.$insertItem->user_id.'/_thumnail/';
+
+            $width = 400;
+            $height = 400;
+
+            if (!file_exists($destination)) {
+                mkdir($destination, 0777, true);
+            }
+
+           if (file_exists($path)) {
+                // Get new dimensions
+                list($width_orig, $height_orig) = getimagesize($path);
+
+                $ratio_orig = $width_orig/$height_orig;
+
+                if ($width/$height > $ratio_orig) {
+                   $width = $height*$ratio_orig;
+                } else {
+                   $height = $width/$ratio_orig;
+                }
+
+                // Resample
+                $image_p = imagecreatetruecolor($width, $height);
+                // $image = imagecreatefromjpeg($path);
 
 
-            $info = getimagesize($path);
+                $info = getimagesize($path);
 
-            if ($info['mime'] == 'image/jpeg') 
-                $image = imagecreatefromjpeg($path);
+                if ($info['mime'] == 'image/jpeg') 
+                    $image = imagecreatefromjpeg($path);
 
-            elseif ($info['mime'] == 'image/gif') 
-                $image = imagecreatefromgif($path);
+                elseif ($info['mime'] == 'image/gif') 
+                    $image = imagecreatefromgif($path);
 
-            elseif ($info['mime'] == 'image/png') 
-                $image = imagecreatefrompng($path);
-
-
-            imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-            $filename = $destination.$insertItem->id.'.jpg';
-            // // Output
-            imagejpeg($image_p, $filename, 100);
-       }
+                elseif ($info['mime'] == 'image/png') 
+                    $image = imagecreatefrompng($path);
 
 
-        if ($imgItm != '') {
-            $arrNew = array( 
-            'item_name' => $request->name, 
-            'item_type_id' => $request->type, 
-            'item_description' => $request->description,
-            'item_category_id' => $request->category, 
-            'contact_number' => $request->contact_number, 
-            'user_id' => $request->user_id, 
-            'icon' => 1
-            );
-            Item::where('id', $insertItem->id)->update($arrNew);
+                imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+                $filename = $destination.$insertItem->id.'.jpg';
+                // // Output
+                imagejpeg($image_p, $filename, 100);
+           }
+
+
+            if ($imgItm != '') {
+                $arrNew = array( 
+                'item_name' => $request->name, 
+                'item_type_id' => $request->type, 
+                'item_description' => $request->description,
+                'item_category_id' => $request->category, 
+                'contact_number' => $request->contact_number, 
+                'user_id' => $request->user_id, 
+                'icon' => 1
+                );
+                Item::where('id', $insertItem->id)->update($arrNew);
+            }
+            return response()->json($insertItem);
+        } catch (Exception $e) {
+            echo $e;
         }
-        return response()->json($insertItem);
     }
 
     public function editProfile(Request $request){
