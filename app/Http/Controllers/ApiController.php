@@ -215,6 +215,8 @@ class ApiController extends FrontController
 
                     if (file_exists($path)) {
                         // Get new dimensions
+                        if(!list($width_orig, $height_orig) = getimagesize($path)) return "Unsupported picture type!";
+                        
                         list($width_orig, $height_orig) = getimagesize($path);
 
                         $ratio_orig = $width_orig/$height_orig;
