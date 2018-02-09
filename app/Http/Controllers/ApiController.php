@@ -124,8 +124,8 @@ class ApiController extends FrontController
             $imgItm = file_put_contents($path,base64_decode($data));
             $destination = public_path().'/assets/upload/user_'.$insertItem->user_id.'/_thumnail/';
 
-            $width = 200;
-            $height = 200;
+            $width = 400;
+            $height = 400;
 
             if (!file_exists($destination)) {
                 mkdir($destination, 0777, true);
