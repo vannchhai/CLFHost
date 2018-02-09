@@ -115,17 +115,17 @@ class ApiController extends FrontController
                 $insertLocation->save();
             }
 
-            if (!file_exists(public_path().'/assets/upload/user_'.$insertItem->user_id)) {
-                mkdir(public_path().'/assets/upload/user_'.$insertItem->user_id, 0777, true);
+            if (!file_exists(public_path().'/assets/upload/user_'.$insertItem->user_id.'/original_image')) {
+                mkdir(public_path().'/assets/upload/user_'.$insertItem->user_id .'/original_image', 0777, true);
             }
 
-            $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/".$insertItem->id.'.jpg';
+            $path = public_path().'/assets/upload/user_'.$insertItem->user_id."/original_image/".$insertItem->id.'.jpg';
             $data = $request->photo;
             $imgItm = file_put_contents($path,base64_decode($data));
             $destination = public_path().'/assets/upload/user_'.$insertItem->user_id.'/_thumnail/';
 
-            $width = 400;
-            $height = 400;
+            $width = 200;
+            $height = 200;
 
             if (!file_exists($destination)) {
                 mkdir($destination, 0777, true);
@@ -133,6 +133,9 @@ class ApiController extends FrontController
 
            if (file_exists($path)) {
                 // Get new dimensions
+
+                if(!list($width_orig, $height_orig) = getimagesize($path)) return "Unsupported picture type!";
+
                 list($width_orig, $height_orig) = getimagesize($path);
 
                 $ratio_orig = $width_orig/$height_orig;
@@ -196,18 +199,18 @@ class ApiController extends FrontController
 
             if($isVerify){
                  if (isset($img)) {
-                    if (!file_exists(public_path().'/assets/upload/user_'.$request->id)) {
-                        mkdir(public_path().'/assets/upload/user_'.$request->id, 0777, true);
+                    if (!file_exists(public_path().'/assets/upload/user_'.$request->id.'/original_image')) {
+                        mkdir(public_path().'/assets/upload/user_'.$request->id.'/original_image', 0777, true);
                     }
 
-                    $path = public_path().'/assets/upload/user_'.$request->id."/profile-".$request->id.'.jpg';
+                    $path = public_path().'/assets/upload/user_'.$request->id."/original_image/profile-".$request->id.'.jpg';
                     file_put_contents($path, base64_decode($img));
 
 
                     $destination = public_path().'/assets/upload/user_'.$request->id.'/_thumnail/';
 
-                    $width = 400;
-                    $height = 400;
+                    $width = 200;
+                    $height = 200;
 
                     if (!file_exists($destination)) {
                         mkdir($destination, 0777, true);
@@ -216,7 +219,7 @@ class ApiController extends FrontController
                     if (file_exists($path)) {
                         // Get new dimensions
                         if(!list($width_orig, $height_orig) = getimagesize($path)) return "Unsupported picture type!";
-                        
+
                         list($width_orig, $height_orig) = getimagesize($path);
 
                         $ratio_orig = $width_orig/$height_orig;
