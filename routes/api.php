@@ -22,7 +22,8 @@ use Illuminate\Http\Request;
 // });
 
 Route::group([
-        'middleware' => ['api', 'cors'],
+        'middleware' => ['api', 'cors','throttle:60,1',
+        'bindings'],
         'prefix' => '',
     ], function ($router) {
 
